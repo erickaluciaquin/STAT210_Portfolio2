@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(lubridate)
+wavedata <- read_csv("wave-7dayopdata.csv", skip = 1)
+```
+
+```{r}
+#| label: Northern Queensland Region
+
+northern_queen <- wavedata %>%
+  filter(Site == "Cairns Mk4",
+         DateTime == "2025-04-26T19:00:00",
+         DateTime == "2025-04-27T19:00:00",
+         DateTime == "2025-04-28T19:00:00",
+         DateTime == "2025-04-29T19:00:00",
+         DateTime == "2025-04-30T19:00:00")
+
+northern_queen
+```
+
+```{r}
+#| label: Southern Queensland Region
+
+southern_queen <- wavedata %>%
+  filter(Site == "Gold Coast Mk4")
+(southern_queen)
+```
+
+```{r}
+wavedata %>%
+  mutate(DateTime = lubridate::ymd_hms(format(DateTime, format = "%Y-%m-%d %T %Z")),
+         date = date(DateTime)) %>% 
+  group_by(date, Site) %>% 
+  summarize(avg_wave = mean(Hsig, na.rm = TRUE))
+```
+
+
+```{r}
+wavedata %>% 
+  distinct(Site)
+```
+

@@ -17,12 +17,12 @@ wavedata <- read_csv("wave-7dayopdata.csv", skip = 1)
 #| label: Northern Queensland Region
 
 northern_queen <- wavedata %>%
-  filter(Site == "Cairns Mk4",
-         DateTime == "2025-04-26T19:00:00",
-         DateTime == "2025-04-27T19:00:00",
-         DateTime == "2025-04-28T19:00:00",
-         DateTime == "2025-04-29T19:00:00",
-         DateTime == "2025-04-30T19:00:00")
+  filter(Site == "Cairns Mk4") %>%
+ggplot + # scatter plot
+  geom_point(mapping = aes(x= DateTime, y= Hsig)) +
+  labs(x= "DateTime",
+       y= "Significant Wave Height (m)",
+       title= "")
 
 northern_queen
 ```
@@ -31,7 +31,9 @@ northern_queen
 #| label: Southern Queensland Region
 
 southern_queen <- wavedata %>%
-  filter(Site == "Gold Coast Mk4")
+  filter(Site == "Gold Coast Mk4") %>%
+ggplot + # scatter plot
+  geom_point(mapping = aes(x= DateTime, y= Hsig))
 (southern_queen)
 ```
 

@@ -46,7 +46,7 @@ ggplot +
 
 
 ```{r}
-#| label: Maximum Wave Height Comparison Between Sites
+#| label:maximum wave height 
 wavedata %>%
   filter(Site %in% c("Cairns Mk4", "Gold Coast Mk4")) %>%
   ggplot(aes(x = Site, y = Hmax)) +
@@ -62,7 +62,7 @@ wavedata %>%
 ```
 
 ```{r}
-#| peak energy period comparison per site
+#| peak energy period 
 wavedata %>%
   filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
   ggplot(aes(x = Site, y = Tp)) +
@@ -76,6 +76,7 @@ wavedata %>%
 ```
 
 ```{r}
+#| label: sea surface temperature
 wavedata %>%
   filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
   ggplot(aes(x = Site, y = SST)) +
@@ -95,6 +96,7 @@ wavedata %>%
 
 ```{r}
 #| label: data cleaning
+
 queensland_wave <- wavedata %>%
   mutate(DateTime = lubridate::ymd_hms(format(DateTime, format = "%Y-%m-%d %T %Z")),
          date = date(DateTime)) %>% 
@@ -109,8 +111,18 @@ filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
                "Cairns Mk4" = "Cairns")) %>%
   arrange(Site)
 
-queensland_wave
-```
+queensland_wave %>% 
+  pivot_longer(cols = contains("wave"),
+               names_to = "wave_height",
+               values_to = "wave_calc") %>%
+  filter(wave_height != "peakwave") %>%
+  ggplot(aes(x= date,
+             y= wave_calc,
+             group= wave_height,
+             color= wave_height)) +
+  geom_point() +
+  facet_wrap(~Site)
+``` 
 
 
 ```{r}

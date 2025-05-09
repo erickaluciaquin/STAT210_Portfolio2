@@ -18,11 +18,12 @@ wavedata <- read_csv("wave-7dayopdata.csv", skip = 1)
 
 northern_queen <- wavedata %>%
   filter(Site == "Cairns Mk4") %>%
-ggplot + # scatter plot
+ggplot + 
   geom_point(mapping = aes(x= DateTime, y= Hsig)) +
   labs(x= "DateTime",
        y= "Significant Wave Height (m)",
-       title= "")
+       title= "Average of the Highest Third of Waves — Northern Region Queensland, Australia") +
+   theme_light()
 
 northern_queen
 ```
@@ -32,17 +33,83 @@ northern_queen
 
 southern_queen <- wavedata %>%
   filter(Site == "Gold Coast Mk4") %>%
-ggplot + # scatter plot
-  geom_point(mapping = aes(x= DateTime, y= Hsig))
+ggplot + 
+  geom_point(mapping = aes(x=DateTime, y= Hsig)) +
+  labs(x= "DateTime",
+       y= "Significant Wave Height (m)",
+       title= "Average of the Highest Third of Waves — Southern Region Queensland, Australia") +
+   theme_light()
+
 (southern_queen)
+```
+
+
+
+```{r}
+#| label: Maximum Wave Height Comparison Between Sites
+wavedata %>%
+  filter(Site %in% c("Cairns Mk4", "Gold Coast Mk4")) %>%
+  ggplot(aes(x = Site, y = Hmax)) +
+  geom_boxplot(fill = "lavenderblush",
+               color = "slateblue") +
+  labs(title = "Maximum Wave Height (m) in Northern and Southern Queensland Regions",
+       x = "Site",
+       y = "Hmax (m)") +
+  theme_light() +
+  coord_flip()
+
+
+```
+
+```{r}
+#| peak energy period comparison per site
+wavedata %>%
+  filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
+  ggplot(aes(x = Site, y = Tp)) +
+  geom_boxplot(fill = "lavender",
+               color = "midnightblue") +
+  labs(title = "Peak Energy Wave Period in Northern and Southern Queensland Regions",
+       x = "Site",
+       y = "Time Period (hour)") +
+  theme_light() +
+  coord_flip()
 ```
 
 ```{r}
 wavedata %>%
+  filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
+  ggplot(aes(x = Site, y = SST)) +
+  geom_boxplot(fill= "lemonchiffon",
+               color= "forestgreen") +
+  labs(title = "Sea Surface Temperature in Northern and Southern Queensland Regions",
+       x = "Site",
+       y = "SST (°C)") +
+  theme_light() +
+  coord_flip()
+```
+
+
+
+
+
+
+```{r}
+#| label: data cleaning
+queensland_wave <- wavedata %>%
   mutate(DateTime = lubridate::ymd_hms(format(DateTime, format = "%Y-%m-%d %T %Z")),
          date = date(DateTime)) %>% 
   group_by(date, Site) %>% 
-  summarize(avg_wave = mean(Hsig, na.rm = TRUE))
+  summarize(
+    avg_wave = mean(Hsig, na.rm = TRUE),
+    peakwave = mean(Tp, na.rm = TRUE), 
+    max_wave = mean(Hmax, na.rm = TRUE)) %>%
+filter(Site %in% c("Gold Coast Mk4", "Cairns Mk4")) %>%
+  mutate(Site = recode(Site,
+               "Gold Coast Mk4" = "Gold Coast",
+               "Cairns Mk4" = "Cairns")) %>%
+  arrange(Site)
+
+queensland_wave
 ```
 
 
